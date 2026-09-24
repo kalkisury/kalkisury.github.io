@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kalki Surya Gumma is a Python and Frappe Developer with 3 years of IT experience at CaratRED Technologies LLP, based in Hyderabad, Telangana, India.">
+  <title>Kalki Surya Gumma | Python & Frappe Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f1ede5;
+      --ink: #17211d;
+      --muted: #66706a;
+      --line: #c7c8be;
+      --acid: #d9f34f;
+      --coral: #ec6849;
+      --night: #17211d;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Manrope, sans-serif;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(calc(100% - 48px), var(--max)); margin: 0 auto; }
+    .mono { font: 500 11px/1.2 "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--coral); z-index: 50; transition: width .12s linear; }
+
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(241, 237, 229, .92);
+      backdrop-filter: blur(14px);
+    }
+    .nav { min-height: 74px; display: flex; align-items: center; justify-content: space-between; }
+    .mark { display: flex; align-items: center; gap: 10px; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 19px; }
+    .mark-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--coral); box-shadow: 4px 3px 0 var(--acid); transition: transform .3s ease, box-shadow .3s ease; }
+    .mark:hover .mark-dot { transform: rotate(20deg) scale(1.15); box-shadow: 5px 4px 0 var(--acid); }
+    .nav-links { display: flex; align-items: center; gap: 30px; font-size: 13px; font-weight: 700; }
+    .nav-links a { position: relative; }
+    .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px; background: var(--coral); transform: scaleX(0); transform-origin: right; transition: transform .25s ease; }
+    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+    .nav-links a.active { color: var(--coral); }
+    .menu { display: none; border: 0; background: none; font: inherit; font-size: 25px; cursor: pointer; }
+
+    .hero { position: relative; min-height: calc(100vh - 74px); display: grid; align-items: center; padding: 84px 0 110px; overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); align-items: end; gap: 70px; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; color: var(--coral); margin-bottom: 26px; }
+    .eyebrow span { display: block; width: 35px; height: 2px; background: var(--coral); }
+    .hero-tagline { max-width: 780px; margin-bottom: 28px; color: var(--ink); font: 600 clamp(28px, 3.4vw, 46px)/1.3 "Space Grotesk", sans-serif; letter-spacing: -.02em; }
+    .hero-tagline .typing-caret { display: inline-block; width: 3px; height: .9em; margin-left: 3px; vertical-align: -.12em; background: var(--coral); animation: caret-blink .8s step-end infinite; }
+    @keyframes caret-blink { 50% { opacity: 0; } }
+    .hero-tagline strong { font-weight: 800; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 800px; margin-bottom: 28px; font: 600 clamp(54px, 8.7vw, 126px)/.9 "Space Grotesk", sans-serif; letter-spacing: -.065em; }
+    .hero-copy { max-width: 440px; margin-left: auto; padding-bottom: 10px; }
+    .hero-copy p { color: var(--muted); font-size: 17px; line-height: 1.65; }
+    .hero-portrait { position: relative; width: 118px; height: 118px; margin: 0 18px 26px auto; animation: portrait-float 4.5s ease-in-out infinite; }
+    .hero-portrait::before { content: ""; position: absolute; inset: -13px; border-radius: 50%; border: 1.5px dashed var(--coral); animation: spin-slow 16s linear infinite; }
+    .hero-portrait img { position: relative; z-index: 2; display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--ink); transition: transform .35s ease, border-color .35s ease; }
+    .hero-portrait:hover img { transform: scale(1.06) rotate(-2deg); border-color: var(--coral); }
+    @keyframes portrait-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    .availability { display: flex; align-items: center; gap: 10px; margin-top: 34px; }
+    .availability i { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #5caa68; box-shadow: 0 0 0 5px #5caa6820; }
+    .availability i::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid #5caa68; opacity: .6; animation: pulse-ring 2s ease-out infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(.7); opacity: .6; } 70% { transform: scale(2.1); opacity: 0; } 100% { opacity: 0; } }
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .stats-band { margin: 0 0 -1px; padding: 50px 38px; border-radius: 22px; background: linear-gradient(120deg, var(--night), #24352c); display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; position: relative; overflow: hidden; }
+    .stats-band::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 15% 20%, rgba(217,243,79,.08), transparent 55%); pointer-events: none; }
+    .stat-item { text-align: center; position: relative; }
+    .stat-item + .stat-item::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: rgba(241,237,229,.14); }
+    .stat-number { display: block; font: 700 clamp(32px, 4vw, 50px)/1 "Space Grotesk", sans-serif; color: var(--acid); letter-spacing: -.02em; }
+    .stat-label { display: block; margin-top: 12px; color: var(--paper); opacity: .72; }
+    @media (max-width: 720px) {
+      .stats-band { grid-template-columns: repeat(2, 1fr); gap: 32px 20px; padding: 38px 26px; border-radius: 18px; }
+      .stat-item:nth-child(3)::before { display: none; }
+    }
+
+    .section { padding: 112px 0; border-top: 1px solid var(--line); }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 45px; }
+    .section-title { position: relative; margin: 0; font: 600 clamp(36px, 5vw, 66px)/1 "Space Grotesk", sans-serif; letter-spacing: -.05em; }
+    .section-title::after { content: ""; position: absolute; left: 0; bottom: -10px; height: 4px; width: 64px; background: var(--coral); transform: scaleX(0); transform-origin: left; transition: transform .6s ease .15s; }
+    .reveal.visible .section-title::after, .section-title.reveal.visible::after { transform: scaleX(1); }
+    .section-note { color: var(--muted); font-size: 13px; }
+    .project-list { display: grid; gap: 22px; }
+    .project { display: grid; grid-template-columns: 1.2fr 1fr; align-items: start; min-height: 355px; border-top: 1px solid var(--line); padding-top: 22px; transition: transform .35s ease; scroll-margin-top: 100px; }
+    .project:hover { transform: translateX(8px); }
+    .project-visual { min-height: 300px; margin-right: 40px; position: relative; overflow: hidden; display: flex; align-items: end; padding: 25px; }
+    .project-visual::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.18) 1.5px, transparent 1.5px); background-size: 24px 24px; background-position: -4px -4px; transition: transform .6s ease; pointer-events: none; }
+    .visual-two::before, .visual-three::before, .visual-five::before { background-image: radial-gradient(rgba(23,33,29,.15) 1.5px, transparent 1.5px); }
+    .project:hover .project-visual::before { transform: scale(1.08); }
+    .project-visual::after { content: "↗"; position: absolute; top: 22px; right: 23px; width: 43px; height: 43px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 22px; transition: transform .3s ease; }
+    .project:hover .project-visual::after { transform: rotate(45deg); }
+    .project-icon { position: absolute; top: 22px; left: 23px; width: 43px; height: 43px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; opacity: .9; transition: transform .35s ease; }
+    .project-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; animation: icon-bob 3.2s ease-in-out infinite; }
+    .project:hover .project-icon { transform: rotate(-8deg) scale(1.06); }
+    @keyframes icon-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    .project:nth-child(2n) .project-icon svg { animation-delay: .6s; }
+    .project:nth-child(3n) .project-icon svg { animation-delay: 1.1s; }
+    .project-visual.has-details { cursor: pointer; }
+    .project-visual.has-details.is-open::after { content: "×"; transform: rotate(0); }
+    .project-visual.has-details:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    .visual-one { color: var(--acid); background: var(--night); }
+    .visual-two { color: var(--ink); background: var(--coral); }
+    .visual-three { color: var(--ink); background: #d6d6c8; }
+    .visual-four { color: #8fe3c7; background: #1f3a3a; }
+    .visual-five { color: var(--ink); background: #e8b74a; }
+    .visual-six { color: #f2a6c9; background: #4a2b3d; }
+    .visual-seven { color: #d6f0fa; background: #2f6f8f; }
+    .visual-eight { color: #e3f0c4; background: #5c6b3d; }
+    .visual-nine { color: #f5e6d3; background: #a34a2e; }
+    .visual-label { font: 600 clamp(34px, 5vw, 71px)/.9 "Space Grotesk", sans-serif; letter-spacing: -.07em; }
+    .visual-one .visual-label { color: var(--acid); }
+    .visual-two .visual-label { color: var(--ink); }
+    .visual-three .visual-label { color: var(--coral); }
+    .visual-four .visual-label { color: #8fe3c7; }
+    .visual-five .visual-label { color: var(--ink); }
+    .visual-six .visual-label { color: #f2a6c9; }
+    .visual-seven .visual-label { color: #d6f0fa; }
+    .visual-eight .visual-label { color: #e3f0c4; }
+    .visual-nine .visual-label { color: #f5e6d3; }
+    .project-info { padding: 34px 0 20px; display: flex; flex-direction: column; }
+    .project-number { color: var(--coral); margin-bottom: 55px; }
+    .project h3 { margin-bottom: 13px; font: 600 29px/1.05 "Space Grotesk", sans-serif; letter-spacing: -.04em; }
+    .project p { max-width: 360px; color: var(--muted); font-size: 14px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1px solid var(--line); font: 10px "DM Mono", monospace; text-transform: uppercase; transition: transform .2s ease, border-color .2s ease, color .2s ease; }
+    .tag svg { width: 12px; height: 12px; flex: none; fill: currentColor; opacity: .85; }
+    .tag:hover { transform: translateY(-2px); border-color: var(--coral); color: var(--coral); }
+    .project-more { margin: 16px 0 20px; }
+    .project-more summary { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--coral); font: 500 11px/1.2 "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; list-style: none; }
+    .project-more summary::-webkit-details-marker { display: none; }
+    .project-more summary::before { content: "+"; display: inline-block; width: 14px; font-size: 14px; line-height: 1; transition: transform .3s ease; }
+    .project-more.is-open summary::before { content: "–"; transform: rotate(180deg); }
+    .project-more ul { display: block; overflow: hidden; max-height: 0; opacity: 0; margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.7; transition: max-height .5s cubic-bezier(.4,0,.2,1), opacity .4s ease, margin-top .5s ease; }
+    .project-more.is-open ul { opacity: 1; margin-top: 14px; }
+    .project-more li { margin-bottom: 8px; transform: translateY(-6px); opacity: 0; transition: transform .35s ease, opacity .35s ease; }
+    .project-more.is-open li { transform: translateY(0); opacity: 1; }
+    .project-more li:nth-child(1) { transition-delay: .04s; }
+    .project-more li:nth-child(2) { transition-delay: .08s; }
+    .project-more li:nth-child(3) { transition-delay: .12s; }
+    .project-more li:nth-child(4) { transition-delay: .16s; }
+    .project-more li:nth-child(5) { transition-delay: .2s; }
+    .project-more li:nth-child(6) { transition-delay: .24s; }
+    .project-more li strong { color: var(--ink); font-weight: 700; }
+
+    .about-grid { display: grid; grid-template-columns: .75fr 1fr; gap: 100px; }
+    .about-grid h2 { margin: 0; font: 600 clamp(42px, 6vw, 78px)/.95 "Space Grotesk", sans-serif; letter-spacing: -.06em; }
+    .about-copy { max-width: 760px; color: var(--muted); font-size: 16px; line-height: 1.75; }
+    .about-copy strong { color: var(--ink); font-weight: 700; }
+    .exp-lead { margin: 0 0 22px; font: 600 clamp(32px, 4.2vw, 54px)/1.05 "Space Grotesk", sans-serif; letter-spacing: -.05em; color: var(--ink); white-space: normal; }
+    .exp-role { margin: 0 0 14px; font: 700 22px/1.3 "Space Grotesk", sans-serif; color: var(--ink); letter-spacing: -.02em; }
+    .exp-desc { max-width: 700px; color: var(--muted); font-size: 16px; line-height: 1.75; }
+    .exp-projects { margin-top: 45px; padding-top: 28px; border-top: 1px solid var(--line); }
+    .exp-projects > .mono { color: var(--muted); }
+    .exp-projects ul { margin: 20px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 40px; }
+    .exp-projects li { color: var(--muted); font-size: 14px; padding-left: 22px; position: relative; }
+    .exp-projects li::before { content: "→"; position: absolute; left: 0; color: var(--coral); }
+    .exp-projects a { color: var(--ink); font-weight: 700; border-bottom: 1px solid var(--line); transition: border-color .2s ease, color .2s ease; }
+    .exp-projects a:hover { color: var(--coral); border-color: var(--coral); }
+    .facts { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 45px; border-top: 1px solid var(--line); }
+    .fact { padding: 17px 0; border-bottom: 1px solid var(--line); transition: border-color .25s ease; }
+    .fact:hover { border-color: var(--coral); }
+    .fact:nth-child(odd) { margin-right: 18px; }
+    .fact-value { display: block; margin-top: 7px; color: var(--ink); font-size: 14px; }
+
+    .contact { padding: 64px 0 48px; background: var(--coral); }
+    .contact-inner { display: flex; align-items: center; justify-content: space-between; gap: 50px; }
+    .contact h2 { max-width: 700px; margin: 0; font: 600 clamp(28px, 3.2vw, 44px)/1.1 "Space Grotesk", sans-serif; letter-spacing: -.03em; }
+    .contact-block { display: flex; flex-direction: column; align-items: flex-end; }
+    .contact-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+    .contact-meta { display: flex; align-items: center; gap: 14px; margin-top: 18px; color: var(--ink); letter-spacing: .06em; }
+    .contact-meta a:hover { color: var(--night); text-decoration: underline; }
+    .contact-action { position: relative; overflow: hidden; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 12px; padding: 13px 22px; border: 1px solid var(--ink); border-radius: 999px; font-weight: 800; font-size: 14px; transition: background .25s, color .25s, transform .2s ease; }
+    .contact-action::before { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(23,33,29,.18), transparent); transform: skewX(-20deg); animation: shine-sweep 4.5s ease-in-out infinite; }
+    @keyframes shine-sweep { 0% { left: -60%; } 35%, 100% { left: 130%; } }
+    .contact-action:hover { background: var(--ink); color: var(--acid); transform: translateY(-2px); }
+    .contact-action span { font-size: 17px; }
+    .contact-action-ghost { border-color: rgba(23, 33, 29, .35); background: transparent; }
+    .contact-action-ghost:hover { background: var(--ink); color: var(--acid); }
+    .marquee { overflow: hidden; border-top: 1px solid var(--line); background: var(--night); padding: 20px 0; }
+    .marquee-track { display: flex; width: max-content; animation: marquee-scroll 26s linear infinite; }
+    .marquee-item { display: flex; align-items: center; padding: 0 30px; color: var(--paper); font: 600 16px "Space Grotesk", sans-serif; white-space: nowrap; }
+    .marquee-item::after { content: "\2733"; color: var(--acid); font-size: 12px; margin-left: 30px; }
+    @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    footer { background: var(--night); color: var(--paper); padding: 25px 0; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 20px; }
+    footer .mono { color: #aab3a9; }
+    .exp-projects li { opacity: 0; transform: translateX(-14px); transition: opacity .5s ease, transform .5s ease; }
+    .exp-projects.visible li { opacity: 1; transform: translateX(0); }
+    .exp-projects li:nth-child(1) { transition-delay: .05s; }
+    .exp-projects li:nth-child(2) { transition-delay: .12s; }
+    .exp-projects li:nth-child(3) { transition-delay: .19s; }
+    .exp-projects li:nth-child(4) { transition-delay: .26s; }
+    .exp-projects li:nth-child(5) { transition-delay: .33s; }
+    .exp-projects li:nth-child(6) { transition-delay: .4s; }
+    .exp-projects li a { transition: color .2s ease, padding-left .2s ease; }
+    .exp-projects li a:hover { color: var(--coral); padding-left: 4px; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .project.reveal { transform: translateY(36px) scale(.98); transition: opacity .8s ease, transform .8s cubic-bezier(.16, .84, .44, 1); }
+    .project.reveal.visible { transform: translateY(0) scale(1); }
+    .project.reveal.visible:hover { transform: translateX(8px) scale(1); }
+    @media (max-width: 720px) {
+      .wrap { width: min(calc(100% - 34px), var(--max)); }
+      .nav { min-height: 65px; }
+      .nav-links { display: none; position: absolute; left: 0; right: 0; top: 65px; padding: 24px 17px; flex-direction: column; align-items: flex-start; gap: 20px; background: var(--paper); border-bottom: 1px solid var(--line); }
+      .nav-links.open { display: flex; }
+      .menu { display: block; }
+      .hero { min-height: auto; padding: 80px 0 105px; }
+      .hero-grid, .about-grid { grid-template-columns: 1fr; gap: 42px; }
+      .hero-copy { margin: 0; }
+      h1 { font-size: clamp(50px, 16vw, 76px); }
+      .eyebrow { align-items: flex-start; }
+      .eyebrow span { flex: 0 0 25px; margin-top: 7px; }
+      .section { padding: 80px 0; }
+      .section-head { display: block; margin-bottom: 30px; }
+      .section-note { display: block; margin-top: 12px; }
+      .section-title { font-size: clamp(38px, 12vw, 54px); }
+      .project { display: block; }
+      .project-visual { margin-right: 0; min-height: 250px; }
+      .project-info { padding: 22px 0 8px; }
+      .project-number { margin-bottom: 28px; }
+      .tags { margin-top: 20px; }
+      .about-grid { gap: 30px; }
+      .facts { grid-template-columns: 1fr; }
+      .exp-projects ul { grid-template-columns: 1fr; }
+      .fact:nth-child(odd) { margin-right: 0; }
+      .fact-value { overflow-wrap: break-word; word-break: normal; }
+      .contact { padding: 48px 0; }
+      .contact-inner { display: block; }
+      .contact-block { align-items: flex-start; }
+      .contact-buttons { margin-top: 38px; }
+      .footer-inner { display: block; }
+      .footer-inner .mono { display: block; }
+      footer .mono + .mono { margin-top: 10px; }
+    }
+    .eyebrow span { transform: scaleX(0); transform-origin: left; transition: transform .6s ease .3s; }
+    .reveal.visible .eyebrow span { transform: scaleX(1); }
+    /* Entrance uses an animation (not a transition) so the tag hover transition isn't delayed;
+       `backwards` fill releases the transform once it ends, so hover lift still works. */
+    @keyframes tag-in { from { opacity: 0; transform: translateY(8px); } }
+    .project.visible .tag { animation: tag-in .45s ease backwards; }
+    .project.visible .tag:nth-child(1) { animation-delay: .30s; }
+    .project.visible .tag:nth-child(2) { animation-delay: .38s; }
+    .project.visible .tag:nth-child(3) { animation-delay: .46s; }
+    .project.visible .tag:nth-child(4) { animation-delay: .54s; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <header>
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="mark" href="#top" aria-label="Back to top"><span class="mark-dot"></span>Kalki Surya Gumma</a>
+      <button class="menu" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <div class="nav-links">
+        <a href="#experience">Experience</a>
+        <a href="#work">Projects</a>
+        <a href="#about">About</a>
+        <a href="#education">Education</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div class="hero-grid">
+        <div class="reveal">
+          <h1 class="hero-tagline" aria-label="Python & Frappe Developer Building scalable systems, workflow automation, and business applications using Python, Frappe, and modern APIs."><strong aria-hidden="true" class="type-bold"></strong><span aria-hidden="true" class="type-rest"></span></h1>
+        </div>
+        <div class="hero-copy reveal">
+          <div class="hero-portrait"><img src="profile.jpg" alt="Kalki Surya Gumma"></div>
+          <p>Backend Developer with 3 years of experience building server-side applications, REST APIs,
+and database-driven systems in Python and the Frappe framework at CaratRED Technologies LLP LLp.
+Skilled in backend architecture, API development, ERP systems, FastAPI, Django, SQL, Jinja,
+and AI agent development, with basic knowledge of HTML, CSS, and Vue.js. Focused on
+solving technical challenges, building scalable backend systems, and delivering reliable results
+through effective collaboration.
+</p>
+          <div class="availability mono"><i></i> Open to professional opportunities</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="stats-band reveal">
+        <div class="stat-item"><span class="stat-number" data-target="3" data-suffix="+">0</span><span class="stat-label mono">Years experience</span></div>
+        <div class="stat-item"><span class="stat-number" data-target="6">0</span><span class="stat-label mono">Production apps shipped</span></div>
+        <div class="stat-item"><span class="stat-number" data-target="9">0</span><span class="stat-label mono">Projects delivered</span></div>
+        <div class="stat-item"><span class="stat-number" data-target="37" data-suffix="+">0</span><span class="stat-label mono">Features built</span></div>
+      </div>
+    </section>
+
+    <section id="experience" class="section">
+      <div class="wrap">
+        <div class="exp-header reveal">
+          <div class="eyebrow mono"><span></span> Aug 2023 — Present / CaratRED Technologies LLP, Hyderabad, India</div>
+          <h2 class="exp-lead section-title">Three years. Six shipped Frappe apps.</h2>
+          <h3 class="exp-role">Python and Frappe Developer</h3>
+          <p class="exp-desc">Across six production Frappe applications, I've worked end-to-end — from data models and business logic to approval workflows and reporting — for CaratRED's internal operations. The role has meant translating operational needs directly into shipped features, owning each build from requirement to deployment, and moving between ERP, helpdesk, and workflow-automation projects as priorities shifted.</p>
+        </div>
+        <div class="exp-projects reveal">
+          <span class="mono">Key projects & contributions</span>
+          <ul>
+            <li><a href="#proj-ezyforms">EzyForms</a> — hospitality workflow application</li>
+            <li><a href="#proj-audit">Audit Module</a> — rule-based audit workflow layer within EzyForms</li>
+            <li><a href="#proj-support">Helpdesk</a> — Ticketing system customization (car_support)</li>
+            <li><a href="#proj-git">Car Git</a> — GitLab integration + PM/HR layer (car_git)</li>
+            <li><a href="#proj-hardwarebu">HardWare BU</a> — hardware trading mini-ERP (hardwarebu)</li>
+            <li><a href="#proj-homaso">Homaso</a> — hostel/PG management system</li>
+          </ul>
+        </div>
+        <div class="facts reveal">
+          <div class="fact"><span class="mono">Industry</span><span class="fact-value">Software Development</span></div>
+          <div class="fact"><span class="mono">Experience</span><span class="fact-value">3 years</span></div>
+          <div class="fact"><span class="mono">Technical focus</span><span class="fact-value">Python · Frappe · FastAPI · Django · SQL</span></div>
+          <div class="fact"><span class="mono">Evolving</span><span class="fact-value">Using AI to complete work faster and more efficiently</span></div>
+          <div class="fact"><span class="mono">Web knowledge</span><span class="fact-value">HTML · CSS · Vue basics</span></div>
+          <div class="fact"><span class="mono">Work location</span><span class="fact-value">Hyderabad, Telangana, India · Hybrid</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="section">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 class="section-title">Project highlights</h2><span class="section-note mono">01 — 09 / Professional & academic work</span></div>
+        <div class="project-list">
+          <article class="project reveal" id="proj-ezyforms">
+            <div class="project-visual visual-one"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span><span class="visual-label">EzyForms.</span></div>
+            <div class="project-info"><span class="project-number mono">01 / Professional project · CaratRED Technologies LLP</span><h3>EzyForms — hospitality workflow application</h3><p>EzyForms is a paperless hospitality workflow application for centralized form management, quick approvals, and audit-ready record keeping across properties. It covers business unit setup, employee and admin management, dynamic approval workflows, and several operational modules.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>Aadhaar masking</strong> — identification fields flagged "Is secure" show only the last 4 digits.</li>
+              <li><strong>Dynamic HOD-based approvals</strong> — approvers resolve from a department's configured HOD at request time, not hardcoded per form.</li>
+              <li><strong>Save as draft</strong> — forms can be saved mid-fill and resumed later from My Requests.</li>
+              <li><strong>Approve/reject via email, no login</strong> — approvers act straight from an email action button.</li>
+              <li><strong>Admin password reset</strong> — force-resets any employee's password with a unique temporary password by email.</li>
+              <li><strong>Interactive dashboard</strong> — a "My Approvals" widget plus clickable charts/tiles that deep-link into filtered lists.</li>
+              <li><strong>No-role-assigned safeguard</strong> — flags unroutable requests instead of leaving them stuck; only an admin can cancel them.</li>
+              <li><strong>Tiered password policy</strong> — Fair / Strong / Very Strong enforcement presets.</li>
+              <li><strong>Ad-hoc reports & charts</strong> — build a filtered report or chart for any form, export to Excel/CSV.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag">Paperless workflows</span><span class="tag">Approval automation</span><span class="tag">Hospitality tech</span></div></div>
+          </article>
+          <article class="project reveal" id="proj-audit">
+            <div class="project-visual visual-two"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="visual-label">Audit<br>module.</span></div>
+            <div class="project-info"><span class="project-number mono">02 / Professional project · Module within EzyForms</span><h3>Audit Module</h3><p>Audit is a module within the EzyForms (ezy_forms) Frappe app, adding a <strong>rule-based workflow engine</strong> and bulk data ingestion (CSV/Excel/JSON) on top of dynamically generated form doctypes. Built the engine that evaluates records against configurable conditions and auto-raises multi-level requestor → approver requests when a rule matches, plus dashboards and rule-wise approval tracking.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>Rule engine</strong> — evaluates records against per-rule AND-grouped conditions; the first matching rule auto-raises its approval.</li>
+              <li><strong>Bulk data ingestion</strong> — CSV/Excel/JSON import via Frappe's Data Import tool, with automatic date-format normalization.</li>
+              <li><strong>Per-rule approval routing</strong> — different conditions on the same form can route to different approver chains.</li>
+              <li><strong>Rule-wise dashboards</strong> — assigned/approved/pending breakdowns, with configurable column layouts per rule.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag">Rule engine</span><span class="tag">Bulk data import</span><span class="tag">Multi-level approvals</span></div></div>
+          </article>
+          <article class="project reveal" id="proj-support">
+            <div class="project-visual visual-three"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg></span><span class="visual-label">Helpdesk.</span></div>
+            <div class="project-info"><span class="project-number mono">03 / Professional project · CaratRED Technologies LLP</span><h3>Helpdesk (car_support)</h3><p>An internal helpdesk built on top of the open-source Frappe Helpdesk, extended end-to-end via doctype and API overrides rather than a separate frontend. Added ticket merge/split, agent-initiated email, one-click PDF export of conversations, customer feedback capture, and automated notifications — all backed by scheduled jobs for mail sync and cleanup.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>Doctype & API overrides</strong> — replaces Helpdesk's HD Ticket/HD Team classes and ticket-list/assignment APIs with CaratRED logic.</li>
+              <li><strong>33 custom fields on HD Ticket</strong> — taxonomy, feedback & QC review scores, resolution SLAs, merge/split bookkeeping.</li>
+              <li><strong>Ticket merge & split</strong> — combine or break out conversations, with customer notifications.</li>
+              <li><strong>Agent-initiated email & PDF export</strong> — start a ticket from an outbound email; export any conversation to PDF.</li>
+              <li><strong>Automated notifications</strong> — acknowledgement emails, restricted-subject blocking, mail-account down alerts.</li>
+              <li><strong>Scheduled cleanup</strong> — monthly bulk purge of Mock-status tickets.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag">Helpdesk customization</span><span class="tag">API overrides</span><span class="tag">Workflow automation</span></div></div>
+          </article>
+          <article class="project reveal" id="proj-git">
+            <div class="project-visual visual-four"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span><span class="visual-label">Car Git.</span></div>
+            <div class="project-info"><span class="project-number mono">04 / Professional project · CaratRED Technologies LLP</span><h3>Car Git — GitLab integration (car_git)</h3><p>Car Git wraps GitLab (via python-gitlab) around ERPNext's Project and Task doctypes — importing groups/projects, creating repositories and task branches, and auto-raising merge requests on release approval. It also adds an independent PM/HR layer: weekly timesheets with an approval workflow, SRS/FRS requirement tracking, QA test cases, and automated missing-timesheet and renewal-reminder emails.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>GitLab-backed Projects/Tasks</strong> — import or create GitLab groups, projects, repos, and task branches directly from Frappe.</li>
+              <li><strong>Automatic merge requests</strong> — approving a Release Note opens a GitLab MR per referenced task branch.</li>
+              <li><strong>Custom SDLC pipeline</strong> — full status flow on Task from Developer Assign through Code Review, QA, and UAT to Production.</li>
+              <li><strong>Dual timesheet system</strong> — a 7-day approval-gated timesheet grid alongside a customized core ERPNext Timesheet.</li>
+              <li><strong>SRS/FRS & QA tracking</strong> — requirement docs with an approval workflow, plus structured step-by-step test cases.</li>
+              <li><strong>Automated HR alerts</strong> — missing-timesheet reminders, credential renewal reminders, and employee-referral status emails.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/></svg>GitLab API</span><span class="tag">Project/Task automation</span><span class="tag">Timesheet workflows</span></div></div>
+          </article>
+          <article class="project reveal" id="proj-hardwarebu">
+            <div class="project-visual visual-five"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="10" y1="20" x2="10" y2="8"/><line x1="15" y1="20" x2="15" y2="14"/><line x1="20" y1="20" x2="20" y2="5"/></svg></span><span class="visual-label">HardWare<br>BU.</span></div>
+            <div class="project-info"><span class="project-number mono">05 / Professional project · CaratRED Technologies LLP</span><h3>HardWare BU — trading mini-ERP (hardwarebu)</h3><p>HardWare BU is a standalone Frappe app implementing a minimal mini-ERP for CaratRED's Hardware Business Unit — back-to-back customer/vendor purchase orders, payment reconciliation against a bank ledger, and gross-margin reporting. It's fully independent of ERPNext and the other CaratRED apps, with no stock/warehouse or asset-tracking concepts.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>Back-to-back trading model</strong> — a Customer Order can link directly to the Vendor Order purchased specifically to fulfill it.</li>
+              <li><strong>Bank ledger reconciliation</strong> — every payment and expense reconciles against a Bank Transactions ledger (Debit/Credit per account).</li>
+              <li><strong>Auto status lifecycle</strong> — orders move Pending → In Progress → Closed based on payments received/paid, then lock read-only.</li>
+              <li><strong>GST & discount validation</strong> — validates item totals against PO value and computes GST difference and discount amounts on save.</li>
+              <li><strong>Gross-margin reporting</strong> — joins a closed Customer Order's items against its linked Vendor Order to compute price difference, margin, and margin % per item or per order.</li>
+              <li><strong>Expense tracking</strong> — internal, customer-associated, and vendor-associated expenses, also reconciled to the bank ledger.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag">ERP</span><span class="tag">GST computation</span><span class="tag">Margin reporting</span></div></div>
+          </article>
+          <article class="project reveal" id="proj-homaso">
+            <div class="project-visual visual-six"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 11L12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg></span><span class="visual-label">Homaso.</span></div>
+            <div class="project-info"><span class="project-number mono">06 / Professional project · CaratRED Technologies LLP</span><h3>Homaso — hostel/PG management system</h3><p>Homaso is a hostel/PG management system: a Frappe backend plus a standalone Vue 3 PWA frontend covering the full tenancy lifecycle — properties, rooms and beds, tenant onboarding, leases with recurring rent/GST billing, online self-service booking, and exit settlement. The Vue app talks to Frappe entirely through whitelisted REST endpoints, with multi-hostel data isolation enforced via native Frappe User Permissions.</p><details class="project-more" open><summary>Full feature list</summary><ul>
+              <li><strong>Full lease lifecycle</strong> — booking → lease → recurring rent/GST billing → mid-lease updates → exit clearance, each with its own submittable doctype and workflow.</li>
+              <li><strong>Online self-service booking</strong> — a public web form with QR-code self-check-in that auto-creates the tenant and booking records.</li>
+              <li><strong>Automated daily billing</strong> — cron jobs generate each period's rent, cascade room-rate changes, and apply approved lease updates.</li>
+              <li><strong>Multi-hostel data isolation</strong> — Supervisors/Employees get scoped Frappe User Permissions (by Hostel/Region) generated automatically on creation.</li>
+              <li><strong>Vue 3 PWA frontend</strong> — an installable app (Vite + Pinia + Tailwind) covering dashboard, bookings, leases, payments, and reports, calling ~96 whitelisted API functions.</li>
+              <li><strong>Reporting suite</strong> — 11 reports covering occupancy, dues, collections, and revenue.</li>
+            </ul></details><div class="tags"><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.88 0C1.29 0 0 1.29 0 2.88v18.24C0 22.71 1.29 24 2.88 24h18.24c1.59 0 2.88-1.29 2.88-2.88V2.88C24 1.29 22.71 0 21.12 0H2.88zM8.4 6h8.024v2.111H8.4V6zm0 5.385h7.49v2.113h-4.93V18H8.4v-6.615z"/></svg>Frappe</span><span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24,1.61H14.06L12,5.16,9.94,1.61H0L12,22.39ZM12,14.08,5.16,2.23H9.59L12,6.41l2.41-4.18h4.43Z"/></svg>Vue 3 PWA</span><span class="tag">REST API</span><span class="tag">Rent & GST billing</span></div></div>
+          </article>
+          <article class="project reveal">
+            <div class="project-visual visual-seven"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="7" y2="7"/><line x1="17" y1="17" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="7" y2="17"/><line x1="17" y1="7" x2="19.1" y2="4.9"/></svg></span><span class="visual-label">Solar<br>distillation.</span></div>
+            <div class="project-info"><span class="project-number mono">07 / Mini project</span><h3>Mini project on solar distillation method</h3><p>Focused on developing an innovative, sustainable, and practical method for water purification using solar energy, integrating scientific observation, hands-on model development, experimentation, and engineering-based problem-solving.</p><div class="tags"><span class="tag">Renewable energy</span><span class="tag">Water purification</span><span class="tag">Team leadership</span></div></div>
+          </article>
+          <article class="project reveal">
+            <div class="project-visual visual-eight"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15 14.5c2.4.4 4 2.5 4 5.5"/></svg></span><span class="visual-label">Service<br>project.</span></div>
+            <div class="project-info"><span class="project-number mono">08 / Community work</span><h3>Community-oriented service project</h3><p>Worked with a team to address local needs through a practical service initiative, demonstrating responsibility, cooperation, and social awareness.</p><div class="tags"><span class="tag">Community service</span><span class="tag">Leadership</span><span class="tag">Collaboration</span></div></div>
+          </article>
+          <article class="project reveal">
+            <div class="project-visual visual-nine"><span class="project-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5"/><rect x="10" y="2" width="4" height="3"/><rect x="10" y="19" width="4" height="3"/><rect x="2" y="10" width="3" height="4"/><rect x="19" y="10" width="3" height="4"/></svg></span><span class="visual-label">Multi<br>miner.</span></div>
+            <div class="project-info"><span class="project-number mono">09 / Technical fest</span><h3>District-level working model</h3><p>Designed and presented a working model at the district technical fest, securing the first prize and reflecting strong technical creativity and execution.</p><div class="tags"><span class="tag">Innovation</span><span class="tag">Model making</span><span class="tag">Problem solving</span></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="wrap">
+        <h2 class="reveal exp-lead section-title">Driven by curiosity, discipline, and results.</h2>
+        <div class="about-copy reveal">
+          <p>I bring a practical, hardworking approach to IT work and professional collaboration. My experience at CaratRED Technologies LLP has strengthened my ability to understand requirements, solve problems, coordinate with others, and complete work with responsibility and focus.</p>
+          <p><strong>My professional mindset is rooted in continuous learning, adaptability, teamwork, and contributing value to every project I work on.</strong></p>
+        </div>
+        <div class="facts reveal"><div class="fact"><span class="mono">Languages & Frameworks</span><span class="fact-value">Python · Frappe · FastAPI · Django</span></div><div class="fact"><span class="mono">Database</span><span class="fact-value">SQL · MySQL/MariaDB</span></div><div class="fact"><span class="mono">Frontend</span><span class="fact-value">HTML · CSS · Vue.js (basics)</span></div><div class="fact"><span class="mono">Integrations & APIs</span><span class="fact-value">REST APIs · GitLab API · Jinja templating</span></div><div class="fact"><span class="mono">Emerging focus</span><span class="fact-value">AI agent development — using AI to complete work faster and more efficiently</span></div><div class="fact"><span class="mono">Tools & Platforms</span><span class="fact-value">Git · GitLab · Frappe Bench · Postman · VS Code</span></div><div class="fact"><span class="mono">Certifications</span><span class="fact-value">Postman Certified</span></div></div>
+        <div class="facts reveal"><div class="fact"><span class="mono">Ownership</span><span class="fact-value">Hard-working, with a strong sense of ownership over end-to-end delivery.</span></div><div class="fact"><span class="mono">Collaboration</span><span class="fact-value">Effective collaborator across cross-functional and client-facing teams.</span></div><div class="fact"><span class="mono">Problem-solving</span><span class="fact-value">Comfortable navigating ambiguous requirements and debugging complex, multi-app Frappe systems independently.</span></div><div class="fact"><span class="mono">Communication</span><span class="fact-value">Coordinates directly with business stakeholders to translate operational needs into working software.</span></div><div class="fact"><span class="mono">Quality & Growth</span><span class="fact-value">Quality-focused and a continuous learner, quick to pick up new tools and domains.</span></div></div>
+      </div>
+    </section>
+
+    <section id="education" class="section">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 class="section-title">Education & background</h2><span class="section-note mono">Mining Engineering foundation</span></div>
+        <div class="facts reveal">
+          <div class="fact"><span class="mono">Degree / Course</span><span class="fact-value">Mining Engineering · 2019 – 2023</span></div>
+          <div class="fact"><span class="mono">Institute</span><span class="fact-value">Godavari Institute of Engineering and Technology (Autonomous)</span></div>
+          <div class="fact"><span class="mono">University</span><span class="fact-value">Permanent affiliation to JNTUK</span></div>
+          <div class="fact"><span class="mono">CGPA / Percentage</span><span class="fact-value"><span class="count-value" data-target="60" data-decimals="2" data-suffix="%">0.00%</span></span></div>
+          <div class="fact"><span class="mono">Intermediate</span><span class="fact-value">Sri Gowthami Junior College, Chirala · 2017 – 2019 —&nbsp;<span class="count-value" data-target="6.17" data-decimals="2">0.00</span></span></div>
+          <div class="fact"><span class="mono">10th</span><span class="fact-value">Oxford High School, Parchur · 2017 —&nbsp;<span class="count-value" data-target="8.7" data-decimals="1">0.0</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="wrap contact-inner reveal"><h2>Let’s connect.</h2><div class="contact-block"><div class="contact-buttons"><a class="contact-action" href="mailto:kalkisurya330@gmail.com">Email me <span>↗</span></a><a class="contact-action contact-action-ghost" href="SuryaResume.docx" download="Kalki-Surya-Gumma-Resume.docx">Download Resume <span>⬇</span></a></div><div class="contact-meta mono"><span>+91 8522094869</span><a href="https://www.linkedin.com/in/kalki-surya-gumma-671a582a3/" target="_blank" rel="noopener">LinkedIn ↗</a></div></div></div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="marquee-item">Python</span><span class="marquee-item">Frappe</span><span class="marquee-item">REST APIs</span><span class="marquee-item">GitLab</span><span class="marquee-item">Vue.js</span><span class="marquee-item">ERP Automation</span><span class="marquee-item">Workflow Automation</span><span class="marquee-item">AI Agents</span><span class="marquee-item">MySQL</span><span class="marquee-item">FastAPI</span><span class="marquee-item">Django</span><span class="marquee-item">Postman</span>
+        <span class="marquee-item">Python</span><span class="marquee-item">Frappe</span><span class="marquee-item">REST APIs</span><span class="marquee-item">GitLab</span><span class="marquee-item">Vue.js</span><span class="marquee-item">ERP Automation</span><span class="marquee-item">Workflow Automation</span><span class="marquee-item">AI Agents</span><span class="marquee-item">MySQL</span><span class="marquee-item">FastAPI</span><span class="marquee-item">Django</span><span class="marquee-item">Postman</span>
+      </div>
+    </div>
+  </main>
+
+  <footer><div class="wrap footer-inner reveal"><span class="mono">© 2026 Kalki Surya Gumma</span><span class="mono">Experience • Leadership • Work ethic</span></div></footer>
+  <script>
+    const scrollProgress = document.querySelector('.scroll-progress');
+    const updateScrollProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      scrollProgress.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', updateScrollProgress);
+    updateScrollProgress();
+
+    const menu = document.querySelector('.menu');
+    const links = document.querySelector('.nav-links');
+    menu.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      menu.setAttribute('aria-expanded', open);
+    });
+    links.addEventListener('click', (event) => {
+      if (event.target.tagName === 'A') {
+        links.classList.remove('open');
+        menu.setAttribute('aria-expanded', 'false');
+      }
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+
+    function animateCount(el) {
+      const target = parseFloat(el.dataset.target);
+      const decimals = parseInt(el.dataset.decimals || '0', 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1400;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (eased * target).toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.stat-number').forEach(animateCount);
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.stats-band').forEach((element) => statsObserver.observe(element));
+
+    const eduFacts = document.querySelector('#education .facts');
+    if (eduFacts) {
+      const eduObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('.count-value').forEach(animateCount);
+            eduObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+      eduObserver.observe(eduFacts);
+    }
+
+    const scrollspyIds = ['experience', 'work', 'about', 'education', 'contact'];
+    const scrollspyLinks = {};
+    scrollspyIds.forEach((id) => {
+      const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+      if (link) scrollspyLinks[id] = link;
+    });
+    const scrollspyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && scrollspyLinks[entry.target.id]) {
+          Object.values(scrollspyLinks).forEach((a) => a.classList.remove('active'));
+          scrollspyLinks[entry.target.id].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    scrollspyIds.forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) scrollspyObserver.observe(section);
+    });
+
+    // Native <details> toggling has a Chromium quirk where CSS transitions on the
+    // content silently freeze on close. Every .project-more stays permanently
+    // `open` in the DOM (see markup) and visibility/animation is driven entirely
+    // by our own `.is-open` class instead of the native open attribute.
+    const accordionItems = Array.from(document.querySelectorAll('.project-more')).map((details) => {
+      const summary = details.querySelector('summary');
+      const list = details.querySelector('ul');
+      const project = details.closest('.project');
+      const visual = project ? project.querySelector('.project-visual') : null;
+      return { details, summary, list, visual };
+    });
+
+    const setOpen = (item, open) => {
+      const { details, list, visual } = item;
+      details.classList.toggle('is-open', open);
+      if (visual) {
+        visual.classList.toggle('is-open', open);
+        visual.setAttribute('aria-expanded', open);
+      }
+      if (list) {
+        if (open) {
+          list.style.maxHeight = list.scrollHeight + 'px';
+        } else {
+          list.style.maxHeight = list.scrollHeight + 'px';
+          list.getBoundingClientRect();
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => { list.style.maxHeight = '0px'; });
+          });
+        }
+      }
+    };
+
+    const toggleItem = (item) => {
+      const willOpen = !item.details.classList.contains('is-open');
+      if (willOpen) {
+        accordionItems.forEach((other) => {
+          if (other !== item && other.details.classList.contains('is-open')) setOpen(other, false);
+        });
+      }
+      setOpen(item, willOpen);
+      if (willOpen) item.details.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    accordionItems.forEach((item) => {
+      const { summary, visual } = item;
+      summary.addEventListener('click', (event) => {
+        event.preventDefault();
+        toggleItem(item);
+      });
+      if (visual) {
+        visual.classList.add('has-details');
+        visual.setAttribute('role', 'button');
+        visual.setAttribute('tabindex', '0');
+        visual.setAttribute('aria-label', 'Show full project details');
+        visual.setAttribute('aria-expanded', 'false');
+        visual.addEventListener('click', () => toggleItem(item));
+        visual.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleItem(item);
+          }
+        });
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      accordionItems.forEach(({ details, list }) => {
+        if (details.classList.contains('is-open') && list) list.style.maxHeight = list.scrollHeight + 'px';
+      });
+    });
+
+    // Reusable two-segment (bold lead + rest) typewriter. Returns a cancel function.
+    function typeSegments(boldEl, restEl, boldText, restText, speed, onDone) {
+      const caret = document.createElement('span');
+      caret.className = 'typing-caret';
+      boldEl.after(caret);
+      let segment = 'bold';
+      let charIndex = 0;
+      let timeoutId;
+      function typeChar() {
+        if (segment === 'bold') {
+          if (charIndex <= boldText.length) {
+            boldEl.textContent = boldText.slice(0, charIndex);
+            charIndex++;
+            timeoutId = setTimeout(typeChar, speed);
+          } else {
+            segment = 'rest';
+            charIndex = 0;
+            restEl.after(caret);
+            timeoutId = setTimeout(typeChar, speed);
+          }
+        } else {
+          if (charIndex <= restText.length) {
+            restEl.textContent = restText.slice(0, charIndex);
+            charIndex++;
+            timeoutId = setTimeout(typeChar, speed);
+          } else {
+            caret.remove();
+            if (onDone) onDone();
+          }
+        }
+      }
+      typeChar();
+      return () => { clearTimeout(timeoutId); caret.remove(); };
+    }
+
+    const typeBold = document.querySelector('.hero-tagline .type-bold');
+    const typeRest = document.querySelector('.hero-tagline .type-rest');
+    if (typeBold && typeRest) {
+      const boldText = 'Python & Frappe Developer';
+      const restText = ' Building scalable systems, workflow automation, and business applications using Python, Frappe, and modern APIs.';
+      const taglineEl = document.querySelector('.hero-tagline');
+      // Reserve the final rendered height up front so the heading fills in from a
+      // fixed top instead of the box growing (and visually shifting) as lines are added.
+      typeBold.textContent = boldText;
+      typeRest.textContent = restText;
+      taglineEl.style.minHeight = taglineEl.offsetHeight + 'px';
+      typeBold.textContent = '';
+      typeRest.textContent = '';
+      typeSegments(typeBold, typeRest, boldText, restText, 22, null);
+    }
+  </script>
+</body>
+</html>
