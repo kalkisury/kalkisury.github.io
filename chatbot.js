@@ -326,14 +326,10 @@
       var m = zoneMetrics.margin;
       var w = zoneMetrics.w;
       var h = zoneMetrics.h;
-      if (zoneMetrics.mobile) {
-        /* Small safe area: bottom corners only, no vertical travel */
-        safeZones = [
-          { x: viewport.w - w - m, y: m },
-          { x: m, y: m }
-        ];
-        return;
-      }
+      /* The robot drifts across the whole viewport on every device, so both
+         mobile and desktop get the same four resting spots. Keeping the
+         bottom row clear of the extreme corners avoids the notch and the
+         home indicator on phones. */
       var topOffset = clamp(Math.round(viewport.h * 0.14), 96, 140);
       var topBottom = Math.max(m, viewport.h - h - topOffset);
       safeZones = [
@@ -641,7 +637,7 @@
     }
 
     function scheduleNextMove() {
-      if (reduced || zoneMetrics.mobile) return;
+      if (reduced) return;
       if (hovered || chatOpen || asleep || travel.active || peekActive) return;
       later('move', rnd(config.movementIntervalMin, config.movementIntervalMax), startTravel);
     }

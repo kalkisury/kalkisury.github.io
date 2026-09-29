@@ -519,6 +519,9 @@
   background: var(--night);
   color: var(--paper);
   border-bottom: 1px solid var(--line);
+  /* Header and input must never be squeezed or scrolled out of reach on a
+     short viewport — only the message list absorbs the difference. */
+  flex: 0 0 auto;
 }
 
 .chatbot-header-left {
@@ -606,8 +609,13 @@
  * Messages Area
  * ============================================================ */
 .chatbot-messages {
-  flex: 1;
+  flex: 1 1 auto;
+  /* A flex item's default `min-height: auto` floors it at its content
+     height, so on a short viewport the list pushed the header above the
+     top of the window. Zero lets it shrink and scroll instead. */
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -832,6 +840,12 @@
   padding: 12px 20px;
   border-top: 1px solid var(--line);
   background: var(--paper);
+  /* On a short window the chips are the least important row, so they
+     shrink and scroll rather than displacing the header. */
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* The author-level `display: flex` above outranks the browser's default
@@ -876,6 +890,9 @@
   padding: 16px;
   border-top: 1px solid var(--line);
   background: var(--paper);
+  /* Always fully visible: the close button and the composer are the two
+     controls that must survive any viewport height. */
+  flex: 0 0 auto;
 }
 
 .chatbot-form {
@@ -988,24 +1005,26 @@
     padding: 6px 12px;
   }
 
+  /* Bottom sheet rather than a fullscreen takeover: the page stays visible
+     above it so the chat reads as part of the page, not a modal app. */
   .chatbot-window {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100vw;
+    left: 8px;
+    right: 8px;
+    width: auto;
     max-width: none;
     /* dvh tracks the area actually visible. With a plain 100vh the window
        stayed taller than the screen once the on-screen keyboard opened, and
        the fixed window got shifted so the header — and the close button —
-       ended up out of reach. */
-    height: 100vh;
-    height: 100dvh;
-    max-height: none;
-    border-radius: 0;
+       ended up out of reach. The sheet stops short of the top so some page
+       is always showing. */
+    height: 78dvh;
+    max-height: calc(100dvh - 96px);
+    border-radius: 18px 18px 0 0;
     border: none;
-    box-shadow: none;
-    transform: translateX(100%);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.28);
+    transform: translateY(100%);
     /* Visibility is delayed on close and immediate on open, matching the
        desktop rule so the slide-out animation stays visible. */
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -1013,7 +1032,7 @@
   }
 
   .chatbot-window.is-open {
-    transform: translateX(0);
+    transform: translateY(0);
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
   }
 
@@ -1023,24 +1042,20 @@
   .chatbot-input-area {
     padding: 16px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
-    position: sticky;
-    bottom: 0;
     background: var(--paper);
   }
 
-  .chatbot-header {
-    /* Keep the close/minimize buttons clear of the notch and status bar */
-    padding-top: calc(15px + env(safe-area-inset-top, 0px));
-  }
-
   /* The lock is applied to <body> (see openWindow/closeWindow), so matching
-     only `html` here left the page scrollable behind the fullscreen sheet —
-     and scrolling is what pushed the header off screen. */
+     only `html` here left the page scrollable behind the sheet — and
+     scrolling is what pushed the fixed sheet until the header was out of
+     reach. Lock both. */
   html.chatbot-open,
   body.chatbot-open { overflow: hidden; }
 
-  /* Mobile: the robot stays put — no autonomous travel */
-  .chatbot { will-change: auto; }
+  /* The robot now travels on mobile too, so it needs the position hint the
+     desktop already had — without it the right/bottom updates repaint on
+     every frame of the drift. */
+  .chatbot { will-change: right, bottom; }
 }
 
 /* Tablet — window size is inherited from --chatbot-window-* on .chatbot,
@@ -1068,6 +1083,54 @@
   .chatbot-messages { padding: 12px 14px; }
   .chatbot-input-area { padding: 10px 14px; }
   .chatbot-send { --size: 34px; }
+}
+
+/* ── Very short viewports (landscape phones, small split panes) ──
+   Below ~360px of height the header and composer alone are taller
+   than the window, so the header was pushed off the top and the close
+   button became unreachable. The header and input are the two controls
+   that must survive any height, so they are compacted rather than the
+   window: the message list is what gives up space. */
+@media (min-width: 769px) and (max-height: 360px) {
+  .chatbot-window {
+    bottom: 76px;
+    max-height: calc(100vh - 92px);
+  }
+
+  .chatbot-header { padding: 7px 12px; }
+  .chatbot-avatar { font-size: 17px; }
+  .chatbot-status { display: none; }
+  .chatbot-header-button { --size: 30px; }
+
+  .chatbot-input-area { padding: 7px 12px; }
+  .chatbot-send { --size: 30px; }
+  .chatbot-input { padding: 8px 14px; }
+}
+
+/* ── Short mobile viewports (landscape phones) ────────────────
+   The same constraint as the desktop short-viewport block, but the
+   sheet has less room to give: 78dvh of a 280px-tall screen leaves
+   too little for the header and composer, so they are compacted
+   here too. Sized on height so portrait phones are unaffected. */
+@media (max-width: 768px) and (max-height: 480px) {
+  .chatbot-window {
+    height: 88dvh;
+    max-height: calc(100dvh - 28px);
+  }
+
+  .chatbot-header { padding: 8px 12px; }
+  .chatbot-avatar { font-size: 17px; }
+  .chatbot-status { display: none; }
+  .chatbot-header-button { --size: 30px; }
+
+  .chatbot-messages { padding: 10px 12px; }
+  .chatbot-suggestions { padding: 8px 12px; }
+  .chatbot-input-area {
+    padding: 8px 12px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
+  }
+  .chatbot-send { --size: 30px; }
+  .chatbot-input { padding: 8px 14px; }
 }
 
 /* ── Reduced motion ──────────────────────────────────────────
