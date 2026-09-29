@@ -268,7 +268,7 @@
   <div class="scroll-progress" aria-hidden="true"></div>
 
   <!-- Chatbot Component — Companion AI Assistant -->
-  <div class="chatbot" id="chatbot" role="dialog" aria-label="AI Assistant" aria-modal="false" data-api-endpoint="/api/chat">
+  <div class="chatbot" id="chatbot" role="dialog" aria-label="AI Assistant" aria-modal="false">
     <!-- Companion Toggle Button — layered 3D robot, animated by RobotController -->
     <button class="chatbot-toggle" id="chatbotToggle" aria-label="Open AI Assistant" aria-expanded="false" aria-controls="chatbotWindow">
       <span class="robot" id="chatbotRobot" aria-hidden="true">
@@ -779,10 +779,12 @@ through effective collaboration.
       }
     }
   </script>
-  <!-- Optional: point the chatbot at a hosted API.
-       On a static host (GitHub Pages / Surge) there is no /api/chat, so set
-       CHATBOT_API_URL here. Leave it unset when Flask serves the site itself.
-       This file is optional and its absence is harmless. -->
+  <!-- Optional: point the chatbot at hosted API backends.
+       On a static host (GitHub Pages / Surge) there is no same-origin
+       /api/chat, so list your backend origins in config.js — it tries each
+       in order and fails over automatically. Unset works fine when Flask
+       serves the site itself. This file is optional and its absence is
+       harmless. -->
   <script src="config.js" defer></script>
   <script src="chatbot.js?v=2.0" defer></script>
 </body>

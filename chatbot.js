@@ -25,8 +25,18 @@
   'use strict';
 
   // ── Configuration ──────────────────────────────────────────────────────
+  /* Statuses that mean "this host has no API on it" rather than "the API is
+     unhappy" — used both for the offline message and for host failover. */
+  var NO_BACKEND_STATUSES = [404, 405, 501];
+
   var DEFAULT_CONFIG = {
-    apiEndpoint: '/api/chat',
+    /* Candidate API origins, tried in order at runtime. Same-origin is always
+       appended last, so local Flask dev needs no configuration. See
+       createEndpointResolver. */
+    apiHosts: [],
+    apiPath: '/api/chat',
+    apiHealthPath: '/api/chat/health',
+    healthTimeout: 4000,
     welcomeMessage: 'Hello! 👋 Welcome. How can I assist you today?',
     typingMessage: 'AI Assistant is typing',
     placeholderText: 'Type your message...',
@@ -1314,16 +1324,135 @@
     };
   }
 
+  // ── EndpointResolver ───────────────────────────────────────────────────
+  /**
+   * Picks which backend to talk to, at runtime.
+   *
+   * The site is static (GitHub Pages / Surge) and the API is a separate
+   * service, so the host cannot simply be hardcoded: a free-tier host may be
+   * asleep, cold-starting, or down, and hardcoding one makes the whole chatbot
+   * fail. Instead, config.apiHosts is an ordered list of candidate origins. The
+   * first one that answers its health check wins, and the winner is cached so
+   * subsequent messages skip the probe.
+   *
+   * The same origin is always tried last, which is what makes local development
+   * (Flask serving the site itself) work with no configuration at all.
+   */
+  var ENDPOINT_CACHE_KEY = 'chatbot_api_endpoint';
+
+  function createEndpointResolver(config) {
+    var candidates = [];
+
+    (config.apiHosts || []).forEach(function (host) {
+      var trimmed = String(host).replace(/\/+$/, '');
+      if (trimmed) candidates.push(trimmed + config.apiPath);
+    });
+
+    /* Same-origin last: correct under Flask, harmless on a static host because
+       its /api/chat returns 404 and the candidate is simply skipped. */
+    if (global.location && global.location.origin) {
+      candidates.push(global.location.origin + config.apiPath);
+    }
+
+    var cached = null;
+
+    function readCache() {
+      if (cached) return cached;
+      try {
+        cached = global.localStorage.getItem(ENDPOINT_CACHE_KEY);
+      } catch (e) {
+        /* private mode — fall back to probing every time */
+      }
+      return cached;
+    }
+
+    function writeCache(endpoint) {
+      cached = endpoint;
+      try {
+        global.localStorage.setItem(ENDPOINT_CACHE_KEY, endpoint);
+      } catch (e) {
+        /* non-fatal */
+      }
+    }
+
+    function clearCache() {
+      cached = null;
+      try {
+        global.localStorage.removeItem(ENDPOINT_CACHE_KEY);
+      } catch (e) {
+        /* non-fatal */
+      }
+    }
+
+    function isHealthy(endpoint) {
+      var url = endpoint.replace(/\/api\/chat$/, '') + config.apiHealthPath;
+      var controller = new AbortController();
+      var timer = setTimeout(function () { controller.abort(); }, config.healthTimeout);
+      return fetch(url, { method: 'GET', signal: controller.signal })
+        .then(function (r) {
+          clearTimeout(timer);
+          return r.ok;
+        })
+        .catch(function () {
+          clearTimeout(timer);
+          return false;
+        });
+    }
+
+    /**
+     * Resolve to a working endpoint. Re-checks the cached host first so a
+     * backend that died since the last visit is detected rather than retried.
+     */
+    function resolve() {
+      var remembered = readCache();
+      var list = candidates.slice();
+
+      /* Try the remembered host first, without a probe, when it's still
+         first-choice — probing on every message would double the latency. */
+      if (remembered && list.indexOf(remembered) === 0) {
+        return Promise.resolve(remembered);
+      }
+      if (remembered) {
+        list.unshift(remembered);
+      }
+
+      function tryNext(i) {
+        if (i >= list.length) {
+          clearCache();
+          return Promise.reject(new Error('No chat API host is reachable'));
+        }
+        return isHealthy(list[i]).then(function (ok) {
+          if (ok) {
+            writeCache(list[i]);
+            return list[i];
+          }
+          return tryNext(i + 1);
+        });
+      }
+
+      return tryNext(0);
+    }
+
+    /* Warm the cache in the background so the first message is not delayed by
+       a health probe. */
+    function prewarm() {
+      resolve().catch(function () {
+        /* No host yet — the offline message covers this when a message is sent */
+      });
+    }
+
+    return { resolve: resolve, invalidate: clearCache, prewarm: prewarm };
+  }
+
   // ── ApiService ─────────────────────────────────────────────────────────
   /**
    * Handles all communication with the backend chat API.
    * Never stores or exposes API keys — that logic lives on the server.
    */
-  function createApiService(config) {
-    var endpoint = config.apiEndpoint;
+  function createApiService(config, resolver) {
     var timeout = config.requestTimeout;
 
-    function send(message, conversationId) {
+    function post(endpoint, message, conversationId) {
       var payload = JSON.stringify({
         message: message,
         conversation_id: conversationId
@@ -1355,10 +1484,40 @@
             reply: (data.reply || data.message || data.response || '').trim(),
             conversationId: data.conversation_id || conversationId
           };
+        })
+        .catch(function (err) {
+          /* An aborted request leaves status undefined, which the caller
+             reports as "unreachable". Mark it so. */
+          if (err && err.status === undefined) err.status = undefined;
+          throw err;
         });
     }
 
-    return { send: send };
+    /**
+     * Resolve a working host, then post. If that host fails in a way that
+     * suggests the host itself is the problem (no response at all, or the
+     * endpoint does not exist), the cached host is dropped and the next
+     * candidate is tried — so a sleeping or removed backend is recovered from
+     * without a page reload.
+     */
+    function send(message, conversationId) {
+      return resolver.resolve().then(function (endpoint) {
+        return post(endpoint, message, conversationId).catch(function (err) {
+          var status = err && err.status;
+          var hostIsGone =
+            status === undefined ||
+            NO_BACKEND_STATUSES.indexOf(status) !== -1;
+          if (!hostIsGone) throw err;
+          resolver.invalidate();
+          return resolver.resolve().then(function (next) {
+            if (next === endpoint) throw err; /* nowhere left to go */
+            return post(next, message, conversationId);
+          });
+        });
+      });
+    }
+
+    return { send: send, prewarm: resolver.prewarm };
   }
 
   // ── ConversationState ─────────────────────────────────────────────────
@@ -1726,6 +1885,11 @@
         el.toggle.setAttribute('aria-expanded', 'true');
         el.toggle.setAttribute('aria-label', config.closeTitle);
         document.body.classList.add('chatbot-open');
+        /* The scrolling element is <html>, so locking <body> alone left the
+           page scrollable behind the fullscreen mobile sheet — and scrolling
+           is what shifted the fixed window until the close button was out of
+           reach. Lock both. */
+        document.documentElement.classList.add('chatbot-open');
         utils.defer(function () { el.input.focus(); });
       },
 
@@ -1734,6 +1898,7 @@
         el.toggle.setAttribute('aria-expanded', 'false');
         el.toggle.setAttribute('aria-label', config.openTitle);
         document.body.classList.remove('chatbot-open');
+        document.documentElement.classList.remove('chatbot-open');
         /* Remove hidden after transition for clean DOM */
         closeTimer = setTimeout(function () {
           el.window.setAttribute('hidden', '');
@@ -1919,17 +2084,24 @@
     /* Merge data-attribute overrides with defaults */
     var config = Object.assign({}, DEFAULT_CONFIG);
 
-    /* Endpoint resolution, most specific first:
-       1. global.CHATBOT_API_URL — set by an optional config.js, so one build
-          of the same files can run against a local Flask server and a hosted
-          API without editing HTML.
-       2. data-api-endpoint on the container.
-       3. the /api/chat default (correct when Flask serves the site itself). */
-    var ep = container.getAttribute('data-api-endpoint');
-    if (global.CHATBOT_API_URL) {
-      ep = global.CHATBOT_API_URL;
+    /* Backend hosts, most specific first:
+       1. global.CHATBOT_API_HOSTS — an array in the optional config.js, so one
+          build of the same files can point at whichever hosts are currently up
+          without editing HTML. The first reachable one wins.
+       2. data-api-hosts on the container (JSON array), same idea.
+       3. same-origin, always tried last — correct when Flask serves the site,
+          harmless on a static host because the path 404s and is skipped. */
+    if (global.CHATBOT_API_HOSTS) {
+      config.apiHosts = [].concat(global.CHATBOT_API_HOSTS);
     }
-    if (ep) config.apiEndpoint = ep;
+    var dh = container.getAttribute('data-api-hosts');
+    if (dh) {
+      try {
+        config.apiHosts = JSON.parse(dh);
+      } catch (e) {
+        /* keep defaults */
+      }
+    }
 
     var wm = container.getAttribute('data-welcome-message');
     if (wm) config.welcomeMessage = wm;
@@ -1945,7 +2117,8 @@
 
     /* Initialise modules */
     var state = createConversationState(config);
-    var api = createApiService(config);
+    var resolver = createEndpointResolver(config);
+    var api = createApiService(config, resolver);
     var ui = createChatbotRenderer(container, config, state);
 
     /* Transient state */
@@ -2023,6 +2196,10 @@
       dispatchChatEvent('open');
       dispatchChatEvent('listening');
       track('chatbot_opened');
+
+      /* Resolve a working backend while the user is still reading, so the
+         first message isn't delayed by a health probe. */
+      if (typeof api.prewarm === 'function') api.prewarm();
     }
 
     function handleClose() {
@@ -2129,7 +2306,6 @@
          error with no status. Both mean retrying cannot help, so show the
          offline message and omit the retry button. A 5xx from a real backend is
          transient and stays retryable. */
-      var NO_BACKEND_STATUSES = [404, 405, 501];
       var status = error && error.status;
       var noBackend =
         !error || status === undefined || NO_BACKEND_STATUSES.indexOf(status) !== -1;

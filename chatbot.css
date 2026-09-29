@@ -995,7 +995,12 @@
     right: 0;
     width: 100vw;
     max-width: none;
+    /* dvh tracks the area actually visible. With a plain 100vh the window
+       stayed taller than the screen once the on-screen keyboard opened, and
+       the fixed window got shifted so the header — and the close button —
+       ended up out of reach. */
     height: 100vh;
+    height: 100dvh;
     max-height: none;
     border-radius: 0;
     border: none;
@@ -1023,7 +1028,16 @@
     background: var(--paper);
   }
 
-  html.chatbot-open { overflow-x: hidden; }
+  .chatbot-header {
+    /* Keep the close/minimize buttons clear of the notch and status bar */
+    padding-top: calc(15px + env(safe-area-inset-top, 0px));
+  }
+
+  /* The lock is applied to <body> (see openWindow/closeWindow), so matching
+     only `html` here left the page scrollable behind the fullscreen sheet —
+     and scrolling is what pushed the header off screen. */
+  html.chatbot-open,
+  body.chatbot-open { overflow: hidden; }
 
   /* Mobile: the robot stays put — no autonomous travel */
   .chatbot { will-change: auto; }
