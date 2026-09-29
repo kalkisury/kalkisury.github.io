@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('js');</script>
   <meta name="description" content="Kalki Surya Gumma is a Python and Frappe Developer with 3 years of IT experience at CaratRED Technologies LLP, based in Hyderabad, Telangana, India.">
   <title>Kalki Surya Gumma | Python & Frappe Developer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -210,9 +211,9 @@
     .exp-projects li a { transition: color .2s ease, padding-left .2s ease; }
     .exp-projects li a:hover { color: var(--coral); padding-left: 4px; }
 
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+    .js .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-    .project.reveal { transform: translateY(36px) scale(.98); transition: opacity .8s ease, transform .8s cubic-bezier(.16, .84, .44, 1); }
+    .js .project.reveal { transform: translateY(36px) scale(.98); transition: opacity .8s ease, transform .8s cubic-bezier(.16, .84, .44, 1); }
     .project.reveal.visible { transform: translateY(0) scale(1); }
     .project.reveal.visible:hover { transform: translateX(8px) scale(1); }
     @media (max-width: 720px) {
@@ -261,9 +262,106 @@
     .project.visible .tag:nth-child(4) { animation-delay: .54s; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
+   <link rel="stylesheet" href="chatbot.css?v=2.0">
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Chatbot Component — Companion AI Assistant -->
+  <div class="chatbot" id="chatbot" role="dialog" aria-label="AI Assistant" aria-modal="false" data-api-endpoint="/api/chat">
+    <!-- Companion Toggle Button — layered 3D robot, animated by RobotController -->
+    <button class="chatbot-toggle" id="chatbotToggle" aria-label="Open AI Assistant" aria-expanded="false" aria-controls="chatbotWindow">
+      <span class="robot" id="chatbotRobot" aria-hidden="true">
+        <span class="robot__shadow"></span>
+        <span class="robot__glow"></span>
+        <span class="robot__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="robot__float">
+          <span class="robot__antenna">
+            <span class="robot__antenna-rod"></span>
+            <span class="robot__antenna-tip"></span>
+          </span>
+          <span class="robot__arm robot__arm--left"><span class="robot__hand"></span></span>
+          <span class="robot__arm robot__arm--right"><span class="robot__hand"></span></span>
+          <span class="robot__torso">
+            <span class="robot__core"></span>
+            <span class="robot__hip"></span>
+            <span class="robot__head">
+              <span class="robot__brow robot__brow--left"></span>
+              <span class="robot__brow robot__brow--right"></span>
+              <span class="robot__eye robot__eye--left">
+                <span class="robot__pupil"></span>
+                <span class="robot__lid"></span>
+              </span>
+              <span class="robot__eye robot__eye--right">
+                <span class="robot__pupil"></span>
+                <span class="robot__lid"></span>
+              </span>
+              <span class="robot__mouth"></span>
+            </span>
+          </span>
+        </span>
+      </span>
+      <span class="chatbot-notification" id="chatbotNotification" aria-live="polite"></span>
+    </button>
+    <span class="chatbot-tooltip" id="chatbotTooltip" role="tooltip" aria-hidden="true">Ask me anything 👋</span>
+
+    <!-- Chat Window -->
+    <div class="chatbot-window" id="chatbotWindow" role="document" hidden>
+      <div class="chatbot-header">
+        <div class="chatbot-header-left">
+          <span class="chatbot-avatar" aria-hidden="true">🤖</span>
+          <div class="chatbot-title">
+            <span class="chatbot-name">AI Assistant</span>
+            <span class="chatbot-status" id="chatbotStatus">
+              <span class="status-dot" aria-hidden="true"></span>
+              Online
+            </span>
+          </div>
+        </div>
+        <button class="chatbot-header-button chatbot-minimize" id="chatbotMinimize" aria-label="Minimize chat" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+            <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="chatbot-header-button chatbot-close" id="chatbotClose" aria-label="Close chat" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="chatbot-messages" id="chatbotMessages" role="log" aria-live="polite" aria-label="Conversation">
+        <!-- Welcome message and conversation will be inserted here -->
+      </div>
+
+      <div class="chatbot-suggestions" id="chatbotSuggestions" role="list" aria-label="Suggested questions" hidden>
+        <!-- Suggested questions will be inserted here -->
+      </div>
+
+      <div class="chatbot-input-area">
+        <form class="chatbot-form" id="chatbotForm" action="javascript:void(0)">
+          <div class="chatbot-input-wrapper">
+            <input
+              type="text"
+              class="chatbot-input"
+              id="chatbotInput"
+              placeholder="Type your message..."
+              autocomplete="off"
+              aria-label="Message input"
+              aria-describedby="chatbotInputHint"
+            >
+            <span id="chatbotInputHint" class="sr-only">Press Enter to send, Escape to minimize</span>
+          </div>
+          <button type="submit" class="chatbot-send" id="chatbotSend" aria-label="Send message" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+            </svg>
+          </button>
+        </form>
+        <p class="chatbot-disclaimer" aria-hidden="true">AI responses may be inaccurate. Verify important information.</p>
+      </div>
+    </div>
+  </div>
   <header>
     <nav class="nav wrap" aria-label="Main navigation">
       <a class="mark" href="#top" aria-label="Back to top"><span class="mark-dot"></span>Kalki Surya Gumma</a>
@@ -287,7 +385,7 @@
         <div class="hero-copy reveal">
           <div class="hero-portrait"><img src="profile.jpg" alt="Kalki Surya Gumma"></div>
           <p>Backend Developer with 3 years of experience building server-side applications, REST APIs,
-and database-driven systems in Python and the Frappe framework at CaratRED Technologies LLP LLp.
+and database-driven systems in Python and the Frappe framework at CaratRED Technologies LLP.
 Skilled in backend architecture, API development, ERP systems, FastAPI, Django, SQL, Jinja,
 and AI agent development, with basic knowledge of HTML, CSS, and Vue.js. Focused on
 solving technical challenges, building scalable backend systems, and delivering reliable results
@@ -496,14 +594,16 @@ through effective collaboration.
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
 
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function animateCount(el) {
       const target = parseFloat(el.dataset.target);
       const decimals = parseInt(el.dataset.decimals || '0', 10);
       const suffix = el.dataset.suffix || '';
+      if (reduceMotion) { el.textContent = target.toFixed(decimals) + suffix; return; }
       const duration = 1400;
       const start = performance.now();
       function tick(now) {
-        const progress = Math.min((now - start) / duration, 1);
+        const progress = Math.max(0, Math.min((now - start) / duration, 1));
         const eased = 1 - Math.pow(1 - progress, 3);
         el.textContent = (eased * target).toFixed(decimals) + suffix;
         if (progress < 1) requestAnimationFrame(tick);
@@ -671,8 +771,19 @@ through effective collaboration.
       taglineEl.style.minHeight = taglineEl.offsetHeight + 'px';
       typeBold.textContent = '';
       typeRest.textContent = '';
-      typeSegments(typeBold, typeRest, boldText, restText, 22, null);
+      if (reduceMotion) {
+        typeBold.textContent = boldText;
+        typeRest.textContent = restText;
+      } else {
+        typeSegments(typeBold, typeRest, boldText, restText, 22, null);
+      }
     }
   </script>
+  <!-- Optional: point the chatbot at a hosted API.
+       On a static host (GitHub Pages / Surge) there is no /api/chat, so set
+       CHATBOT_API_URL here. Leave it unset when Flask serves the site itself.
+       This file is optional and its absence is harmless. -->
+  <script src="config.js" defer></script>
+  <script src="chatbot.js?v=2.0" defer></script>
 </body>
 </html>
