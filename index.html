@@ -262,13 +262,13 @@
     .project.visible .tag:nth-child(4) { animation-delay: .54s; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
-   <link rel="stylesheet" href="chatbot.css?v=2.0">
+  <link rel="stylesheet" href="chatbot.css?v=2.11">
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
 
   <!-- Chatbot Component — Companion AI Assistant -->
-  <div class="chatbot" id="chatbot" role="dialog" aria-label="AI Assistant" aria-modal="false">
+  <div class="chatbot" id="chatbot" data-api-hosts='["https://kalki-chatbot-api.onrender.com"]' role="dialog" aria-label="AI Assistant" aria-modal="false">
     <!-- Companion Toggle Button — layered 3D robot, animated by RobotController -->
     <button class="chatbot-toggle" id="chatbotToggle" aria-label="Open AI Assistant" aria-expanded="false" aria-controls="chatbotWindow">
       <span class="robot" id="chatbotRobot" aria-hidden="true">
@@ -311,23 +311,25 @@
         <div class="chatbot-header-left">
           <span class="chatbot-avatar" aria-hidden="true">🤖</span>
           <div class="chatbot-title">
-            <span class="chatbot-name">AI Assistant</span>
-            <span class="chatbot-status" id="chatbotStatus">
-              <span class="status-dot" aria-hidden="true"></span>
+            <span class="chatbot-name">Kalki AI</span>
+            <span class="chatbot-status visually-hidden" id="chatbotStatus" role="status" aria-live="polite">
               Online
             </span>
           </div>
         </div>
-        <button class="chatbot-header-button chatbot-minimize" id="chatbotMinimize" aria-label="Minimize chat" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
-            <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
-          </svg>
-        </button>
-        <button class="chatbot-header-button chatbot-close" id="chatbotClose" aria-label="Close chat" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-          </svg>
-        </button>
+        <div class="chatbot-header-right">
+          <span class="chatbot-clock" id="chatbotClock" aria-hidden="true">--:--</span>
+          <button class="chatbot-header-button chatbot-minimize" id="chatbotMinimize" aria-label="Minimize chat" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+              <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="chatbot-header-button chatbot-close" id="chatbotClose" aria-label="Close chat" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div class="chatbot-messages" id="chatbotMessages" role="log" aria-live="polite" aria-label="Conversation">
@@ -345,14 +347,14 @@
               type="text"
               class="chatbot-input"
               id="chatbotInput"
-              placeholder="Type your message..."
+              placeholder="Ask anything..."
               autocomplete="off"
               aria-label="Message input"
             >
           </div>
           <button type="submit" class="chatbot-send" id="chatbotSend" aria-label="Send message" disabled>
             <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+              <path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </form>
@@ -777,13 +779,7 @@ through effective collaboration.
       }
     }
   </script>
-  <!-- Optional: point the chatbot at hosted API backends.
-       On a static host (GitHub Pages / Surge) there is no same-origin
-       /api/chat, so list your backend origins in config.js — it tries each
-       in order and fails over automatically. Unset works fine when Flask
-       serves the site itself. This file is optional and its absence is
-       harmless. -->
-  <script src="config.js" defer></script>
-  <script src="chatbot.js?v=2.0" defer></script>
+  <!-- Static hosting uses the separate API host declared on #chatbot above. -->
+  <script src="chatbot.js?v=2.10" defer></script>
 </body>
 </html>

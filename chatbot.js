@@ -31,29 +31,37 @@
 
   var DEFAULT_CONFIG = {
     /* Candidate API origins, tried in order at runtime. Same-origin is always
-       appended last, so local Flask dev needs no configuration. See
+       appended last, so local container dev needs no configuration. See
        createEndpointResolver. */
     apiHosts: [],
     apiPath: '/api/chat',
     apiHealthPath: '/api/chat/health',
     healthTimeout: 4000,
-    welcomeMessage: 'Hello! 👋 Welcome. How can I assist you today?',
-    typingMessage: 'AI Assistant is typing',
-    placeholderText: 'Type your message...',
+    welcomeMessage: 'Hey! 👋\n\nWhat do you want to know?',
+    typingMessage: 'Kalki AI is typing',
+    placeholderText: 'Ask anything...',
     errorMessage: "Sorry, I couldn't process your request right now. Please try again.",
     errorRetryText: 'Retry',
     sendButtonLabel: 'Send',
     minimizeTitle: 'Minimize chat',
     closeTitle: 'Close chat',
     openTitle: 'Open AI Assistant',
+    /* Chips are shown as short uppercase tags, but each one still sends a full
+       question. `label` is what the user reads; `question` is what gets asked,
+       and is also the accessible name so the button is never announced as
+       just "About me". A bare string still works and is used as both. */
     suggestedQuestions: [
-      'What services do you offer?',
-      'How can I get in touch?',
-      'What is your experience?',
-      'What are your skills?'
+      { label: 'About Me', question: 'Tell me about yourself' },
+      { label: 'Projects', question: 'What projects have you built?' },
+      { label: 'Skills', question: 'What are your skills?' },
+      { label: 'Experience', question: 'What is your experience?' }
     ],
     storageKey: 'chatbot_conversation',
-    requestTimeout: 15000,
+    /* Must exceed the backend's slowest provider, or the request is aborted
+       before the answer arrives. A self-hosted Ollama model on CPU prefills
+       at roughly 17 tok/s, so a reply takes 20-60s; the backend caps it at
+       OLLAMA_TIMEOUT (60s). 90s leaves headroom without hanging forever. */
+    requestTimeout: 90000,
     debug: false,
     /* Shown when the chat API cannot be reached at all — e.g. the site is
        hosted on a static host (GitHub Pages / Surge) and no backend URL has
@@ -1332,9 +1340,9 @@
    * subsequent messages skip the probe.
    *
    * The same origin is always tried last, which is what makes local development
-   * (Flask serving the site itself) work with no configuration at all.
+   * (the backend container serving the site itself) work with no configuration.
    */
-  var ENDPOINT_CACHE_KEY = 'chatbot_api_endpoint';
+  var ENDPOINT_CACHE_KEY = 'chatbot_api_endpoint_v2';
 
   function createEndpointResolver(config) {
     var candidates = [];
@@ -1344,7 +1352,8 @@
       if (trimmed) candidates.push(trimmed + config.apiPath);
     });
 
-    /* Same-origin last: correct under Flask, harmless on a static host because
+    /* Same-origin last: correct when the backend serves the site, harmless on a
+       static host because
        its /api/chat returns 404 and the candidate is simply skipped. */
     if (global.location && global.location.origin) {
       candidates.push(global.location.origin + config.apiPath);
@@ -1448,11 +1457,28 @@
   function createApiService(config, resolver) {
     var timeout = config.requestTimeout;
 
-    function post(endpoint, message, conversationId) {
-      var payload = JSON.stringify({
+    var _weatherRe = /(?:weather|temperature)(?:\s+(?:in|at|for|of)\s+[\w][\w .,'-]{0,79})?[?.!]*$/i;
+
+    function _isWeatherQuery(text) {
+      return _weatherRe.test(text.trim());
+    }
+
+    function _getCoords() {
+      return new Promise(function (resolve) {
+        if (!navigator.geolocation) return resolve(null);
+        navigator.geolocation.getCurrentPosition(
+          function (pos) { resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }); },
+          function () { resolve(null); },
+          { timeout: 5000, maximumAge: 60000 }
+        );
+      });
+    }
+
+    function post(endpoint, message, conversationId, extras) {
+      var payload = JSON.stringify(Object.assign({
         message: message,
         conversation_id: conversationId
-      });
+      }, extras || {}));
 
       var controller = new AbortController();
       var timer = setTimeout(function () { controller.abort(); }, timeout);
@@ -1497,17 +1523,21 @@
      * without a page reload.
      */
     function send(message, conversationId) {
-      return resolver.resolve().then(function (endpoint) {
-        return post(endpoint, message, conversationId).catch(function (err) {
-          var status = err && err.status;
-          var hostIsGone =
-            status === undefined ||
-            NO_BACKEND_STATUSES.indexOf(status) !== -1;
-          if (!hostIsGone) throw err;
-          resolver.invalidate();
-          return resolver.resolve().then(function (next) {
-            if (next === endpoint) throw err; /* nowhere left to go */
-            return post(next, message, conversationId);
+      var coordsPromise = _isWeatherQuery(message) ? _getCoords() : Promise.resolve(null);
+      return coordsPromise.then(function (coords) {
+        var extras = coords ? { lat: coords.lat, lon: coords.lon } : null;
+        return resolver.resolve().then(function (endpoint) {
+          return post(endpoint, message, conversationId, extras).catch(function (err) {
+            var status = err && err.status;
+            var hostIsGone =
+              status === undefined ||
+              NO_BACKEND_STATUSES.indexOf(status) !== -1;
+            if (!hostIsGone) throw err;
+            resolver.invalidate();
+            return resolver.resolve().then(function (next) {
+              if (next === endpoint) throw err;
+              return post(next, message, conversationId, extras);
+            });
           });
         });
       });
@@ -1777,6 +1807,8 @@
       input: container.querySelector('#chatbotInput'),
       send: container.querySelector('#chatbotSend'),
       minimize: container.querySelector('#chatbotMinimize'),
+      clock: container.querySelector('#chatbotClock'),
+      status: container.querySelector('#chatbotStatus'),
       header: container.querySelector('.chatbot-header'),
       notification: container.querySelector('#chatbotNotification')
     };
@@ -2003,15 +2035,27 @@
         }
         el.suggestions.innerHTML = '';
         el.suggestions.removeAttribute('hidden');
-        questions.forEach(function (q) {
+        questions.forEach(function (item) {
+          /* Accept either {label, question} or a bare string. */
+          var label = (item && typeof item === 'object') ? item.label : item;
+          var question = (item && typeof item === 'object' && item.question)
+            ? item.question
+            : item;
           var btn = document.createElement('button');
           btn.className = 'chatbot-suggestion';
           btn.setAttribute('type', 'button');
           btn.setAttribute('role', 'button');
-          btn.textContent = q;
+          /* The tag shows the short label; the accessible name and the tooltip
+             carry the full question, so a screen reader and a mouse user both
+             find out what will actually be asked. */
+          btn.textContent = label;
+          if (label !== question) {
+            btn.setAttribute('aria-label', question);
+            btn.setAttribute('title', question);
+          }
           btn.addEventListener('click', function () {
             if (typeof el.onSuggestionClick === 'function') {
-              el.onSuggestionClick(q);
+              el.onSuggestionClick(question);
             }
           });
           el.suggestions.appendChild(btn);
@@ -2081,12 +2125,12 @@
     var config = Object.assign({}, DEFAULT_CONFIG);
 
     /* Backend hosts, most specific first:
-       1. global.CHATBOT_API_HOSTS — an array in the optional config.js, so one
-          build of the same files can point at whichever hosts are currently up
-          without editing HTML. The first reachable one wins.
+       1. global.CHATBOT_API_HOSTS — a global array defined before this script
+          runs, so one build of the same files can point at whichever hosts are
+          currently up without editing HTML. The first reachable one wins.
        2. data-api-hosts on the container (JSON array), same idea.
-       3. same-origin, always tried last — correct when Flask serves the site,
-          harmless on a static host because the path 404s and is skipped. */
+       3. same-origin, always tried last — correct when the backend serves the
+          site, harmless on a static host because the path 404s and is skipped. */
     if (global.CHATBOT_API_HOSTS) {
       config.apiHosts = [].concat(global.CHATBOT_API_HOSTS);
     }
@@ -2132,6 +2176,40 @@
       }));
     }
 
+    /* ── Header clock ──
+     * Local wall-clock time, HH:MM in the viewer's own timezone. Ticks on an
+     * interval aligned to the next minute so the minute flips when it actually
+     * changes rather than up to a second late. The timer is cleared when the
+     * window closes, because a closed chat window has nothing to display and a
+     * running interval per instance is waste. */
+    var clockTimer = null;
+
+    function renderClock() {
+      if (!ui.el.clock) return;
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      ui.el.clock.textContent =
+        (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+    }
+
+    function startClock() {
+      if (!ui.el.clock || clockTimer) return;
+      renderClock();
+      var delay = (60 - (new Date().getSeconds())) * 1000;
+      clockTimer = setTimeout(function tick() {
+        renderClock();
+        clockTimer = setTimeout(tick, 60000);
+      }, delay);
+    }
+
+    function stopClock() {
+      if (clockTimer) {
+        clearTimeout(clockTimer);
+        clockTimer = null;
+      }
+    }
+
     /* ── Event handlers ── */
 
     /* Places the chat window so it reads as expanding out of the robot */
@@ -2165,6 +2243,7 @@
     function handleOpen() {
       ui.openWindow();
       alignWindowToRobot();
+      startClock();
       state.markOpened();
       unreadCount = 0;
       ui.setNotification(0);
@@ -2200,12 +2279,14 @@
 
     function handleClose() {
       ui.closeWindow();
+      stopClock();
       dispatchChatEvent('close');
       track('chatbot_closed');
     }
 
     function handleMinimize() {
       ui.closeWindow();
+      stopClock();
       /* The robot only knows the chat is closed if it hears about it */
       dispatchChatEvent('close');
       track('chatbot_closed');
